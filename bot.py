@@ -28,6 +28,9 @@ from botcity.maestro import *
 
 from configuracao import var_strCaminhoSistem, var_strUsuario, var_strSenha
 
+from BASIC_SYSTEM.loginSistema import func_login
+from BASIC_SYSTEM.cadastrarRecibo import fun_acessarTelaCadastro
+
 # Disable errors if we are not connected to Maestro
 BotMaestroSDK.RAISE_NOT_CONNECTED = False
 
@@ -44,22 +47,25 @@ def main():
 
     bot = DesktopBot()
 
-    bot.execute(var_strCaminhoSistem)
+    # Fim da tela de login
+    func_login(var_strUsuario, var_strSenha, bot,
+               var_strCaminhoSistem, not_found)
 
-    # Implement here your logic...
+    # Tela de cadstro
+    fun_acessarTelaCadastro(bot, not_found)
+    if not bot.find("cargo", matching=0.97, waiting_time=10000):
+        not_found("cargo")
+    bot.rightClickRelative(76, 12)
 
-    if not bot.find("usuario", matching=0.97, waiting_time=10000):
-        not_found("usuario")
-    bot.rightClickRelative(82, 7)
+    bot.find_app_element()
 
-    bot.paste(var_strUsuario)
 
-    # Uncomment to mark this task as finished on BotMaestro
-    # maestro.finish_task(
-    #     task_id=execution.task_id,
-    #     status=AutomationTaskFinishStatus.SUCCESS,
-    #     message="Task Finished OK."
-    # )
+# Uncomment to mark this task as finished on BotMaestro
+# maestro.finish_task(
+#     task_id=execution.task_id,
+#     status=AutomationTaskFinishStatus.SUCCESS,
+#     message="Task Finished OK."
+# )
 
 
 def not_found(label):
