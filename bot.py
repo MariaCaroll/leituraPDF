@@ -26,24 +26,33 @@ from botcity.core import DesktopBot
 # Import for integration with BotCity Maestro SDK
 from botcity.maestro import *
 
+from configuracao import var_strCaminhoSistem, var_strUsuario, var_strSenha
+
 # Disable errors if we are not connected to Maestro
 BotMaestroSDK.RAISE_NOT_CONNECTED = False
+
 
 def main():
     # Runner passes the server url, the id of the task being executed,
     # the access token and the parameters that this task receives (when applicable).
     maestro = BotMaestroSDK.from_sys_args()
-    ## Fetch the BotExecution with details from the task, including parameters
+    # Fetch the BotExecution with details from the task, including parameters
     execution = maestro.get_execution()
 
     print(f"Task ID is: {execution.task_id}")
     print(f"Task Parameters are: {execution.parameters}")
 
     bot = DesktopBot()
-    bot.browse("http://www.botcity.dev")
+
+    bot.execute(var_strCaminhoSistem)
 
     # Implement here your logic...
-    ...
+
+    if not bot.find("usuario", matching=0.97, waiting_time=10000):
+        not_found("usuario")
+    bot.rightClickRelative(82, 7)
+
+    bot.paste(var_strUsuario)
 
     # Uncomment to mark this task as finished on BotMaestro
     # maestro.finish_task(
@@ -51,6 +60,7 @@ def main():
     #     status=AutomationTaskFinishStatus.SUCCESS,
     #     message="Task Finished OK."
     # )
+
 
 def not_found(label):
     print(f"Element not found: {label}")

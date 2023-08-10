@@ -32,7 +32,7 @@ def func_ExtrairDados(var_strTexto):
         # Extraindo com REGEX
         var_strRegex = re.compile(r'(EMISSÃO:\s+)([\d]{2}\/[\d]{2}\/[\d]{4})')
         var_strDataDocumento = var_strRegex.search(var_strTexto).group(2)
-        print(f"Número do documento: {var_strDataDocumento}")
+        print(f"Data do documento: {var_strDataDocumento}")
 
         var_strRegex = re.compile(r'(TURA:\s+)([\d]+)')
         var_strNumeroFatura = var_strRegex.search(var_strTexto).group(2)
@@ -45,11 +45,9 @@ def func_ExtrairDados(var_strTexto):
         var_strRegex = re.compile(r'(CLIENTE:\s+)(\w+\s\w+)')
         var_strNomeCliente = var_strRegex.search(var_strTexto).group(2)
         print(f"Nome do cliente: {var_strNomeCliente}")
-
-        # endereço
-
+      
         var_strRegex = re.compile(r'(\([\d]{2}\)\s[\d]{5}\s\W[\d]{4})')
-        var_strTelefone = var_strRegex.search(var_strTexto).group(1).strip()
+        var_strTelefone = var_strRegex.search(var_strTexto).group(1).replace(" ","").replace(")",") ")
         print(f"Telefone: {var_strTelefone}")
 
         var_strRegex = re.compile(
@@ -63,7 +61,7 @@ def func_ExtrairDados(var_strTexto):
 
         var_strRegex = re.compile(
             r'(VENCIMENTO\s+)(\w+\s\w+)(\s+)(\w+)(\s+)(\w+\s\w+\s\w+)(\s+)([\d]{2}\/[\d]{2}\/[\d]{4})')
-        var_strProfissional = var_strRegex.search(var_strTexto).group(4)
+        var_strDataDocumento = var_strRegex.search(var_strTexto).group(4)
         print(f"Data do documento: {var_strDataDocumento}")
 
         var_strRegex = re.compile(
