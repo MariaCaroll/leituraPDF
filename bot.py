@@ -29,7 +29,11 @@ from botcity.maestro import *
 from configuracao import var_strCaminhoSistem, var_strUsuario, var_strSenha
 
 from BASIC_SYSTEM.loginSistema import func_login
-from BASIC_SYSTEM.cadastrarRecibo import fun_acessarTelaCadastro
+from BASIC_SYSTEM.cadastrarRecibo import fun_acessarTelaCadastro, fun_cadastrarRecibo
+from BASIC_SYSTEM.listaComboBox import var_listCargo, var_listForma
+from PDF.extrairDados import var_strIdCliente, var_strNomeCliente, var_strTelefone, var_strNumeroFatura, var_strDataDocumento, var_strProfissional
+from PDF.extrairDados import var_strDataPagamento, var_strDescricao, var_strImposto, var_strCargo, var_strTipoPagamento, var_strSubtotal
+
 
 # Disable errors if we are not connected to Maestro
 BotMaestroSDK.RAISE_NOT_CONNECTED = False
@@ -51,14 +55,10 @@ def main():
     func_login(var_strUsuario, var_strSenha, bot,
                var_strCaminhoSistem, not_found)
 
-    # Tela de cadstro
     fun_acessarTelaCadastro(bot, not_found)
-    if not bot.find("cargo", matching=0.97, waiting_time=10000):
-        not_found("cargo")
-    bot.rightClickRelative(76, 12)
-
-    bot.find_app_element()
-
+    fun_cadastrarRecibo(bot, not_found, var_listCargo, var_strIdCliente, var_strNomeCliente, var_strTelefone, var_strNumeroFatura, var_strDataDocumento,
+                        var_strDataPagamento, var_strDescricao, var_strImposto, var_strCargo,
+                        var_strProfissional, var_strTipoPagamento, var_strSubtotal)
 
 # Uncomment to mark this task as finished on BotMaestro
 # maestro.finish_task(
