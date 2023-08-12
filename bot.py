@@ -56,9 +56,10 @@ def main():
                var_strCaminhoSistem, not_found)
 
     fun_acessarTelaCadastro(bot, not_found)
-    fun_cadastrarRecibo(bot, not_found, var_listCargo, var_strIdCliente, var_strNomeCliente, var_strTelefone, var_strNumeroFatura, var_strDataDocumento,
+    fun_cadastrarRecibo(bot, not_found, var_listCargo, var_listForma, var_strIdCliente, var_strNomeCliente, var_strTelefone, var_strNumeroFatura, var_strDataDocumento,
                         var_strDataPagamento, var_strDescricao, var_strImposto, var_strCargo,
                         var_strProfissional, var_strTipoPagamento, var_strSubtotal)
+
 
 # Uncomment to mark this task as finished on BotMaestro
 # maestro.finish_task(

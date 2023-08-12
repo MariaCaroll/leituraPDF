@@ -1,1 +1,1 @@
-pandas_options={"header": None}
+var_strIdCliente

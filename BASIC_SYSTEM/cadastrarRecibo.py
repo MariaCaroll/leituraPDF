@@ -12,12 +12,12 @@ def fun_acessarTelaCadastro(bot, not_found):
         print("Erro ao acessar tela de cadastrar recibo")
 
 
-def fun_cadastrarRecibo(bot, not_found, var_listCargo, var_strIdCliente, var_strNomeCliente, var_strTelefone, var_strNumeroFatura, var_strDataDocumento,
+def fun_cadastrarRecibo(bot, not_found, var_listCargo, var_listPagamento, var_strIdCliente, var_strNomeCliente, var_strTelefone, var_strNumeroFatura, var_strDataDocumento,
                         var_strDataPagamento, var_strDescricao, var_strImposto, var_strCargo,
                         var_strProfissional, var_strTipoPagamento, var_strSubtotal):
     var_intContador = 0
 
-    print("Agora vai cadastrar..")
+    print("Cadastrando Recibo...")
     if not bot.find("idCliente", matching=0.97, waiting_time=10000):
         not_found("idCliente")
     bot.right_click_relative(88, 11)
@@ -56,8 +56,11 @@ def fun_cadastrarRecibo(bot, not_found, var_listCargo, var_strIdCliente, var_str
     if not bot.find("valorLiquido", matching=0.97, waiting_time=10000):
         not_found("valorLiquido")
     bot.right_click_relative(68, 5)
-    var_strValorLiquido = int(var_strSubtotal) - int(var_strImposto)
-    bot.paste(var_strValorLiquido)
+    var_intValorLiquido = 0.0
+    var_strSubtotal = var_strSubtotal.replace(",",".")
+    var_strImposto = var_strImposto.replace(",",".")
+    var_intValorLiquido = float(var_strSubtotal) - float(var_strImposto)
+    bot.paste(var_intValorLiquido)
 
     if not bot.find("imposto", matching=0.97, waiting_time=10000):
         not_found("imposto")
@@ -74,10 +77,6 @@ def fun_cadastrarRecibo(bot, not_found, var_listCargo, var_strIdCliente, var_str
     bot.right_click_relative(93, 5)
     bot.paste(var_strSubtotal)
 
-    if not bot.find("adicionar", matching=0.97, waiting_time=10000):
-        not_found("adicionar")
-    # bot.right_click()
-
     # Selecionar cargo
     if not bot.find("cargo", matching=0.97, waiting_time=10000):
         not_found("cargo")
@@ -85,3 +84,22 @@ def fun_cadastrarRecibo(bot, not_found, var_listCargo, var_strIdCliente, var_str
     var_intIndex = var_listCargo.index(var_strCargo)
     while var_intContador <= var_intIndex:
         bot.type_down()
+        var_intContador += 1
+    bot.enter()
+
+    # Selecina forma de pagamento
+    if not bot.find("formaPagamento", matching=0.97, waiting_time=10000):
+        not_found("formaPagamento")
+    bot.right_click_relative(170, 8)
+    var_intContador = 0
+    var_intIndex = var_listPagamento.index(var_strTipoPagamento)
+    while var_intContador <= var_intIndex:
+        bot.type_down()
+        var_intContador += 1
+    bot.enter()
+
+    if not bot.find("adicionar", matching=0.97, waiting_time=10000):
+        not_found("adicionar")
+    bot.right_click()
+
+    print("Recibo cadastrado com sucesso!")
