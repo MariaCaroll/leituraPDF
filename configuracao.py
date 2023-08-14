@@ -5,5 +5,5 @@ var_strSenha = "admin123"
 
 # Gmail
 var_strUserGmail = "carolfavola@gmail.com"
-var_strSenhaGmail = "ntnrvvqzndqvqgir"
+var_strSenhaGmail = "senhas aplicativo "
 var_strDestinatario = "maria.limadev@gmail.com"
