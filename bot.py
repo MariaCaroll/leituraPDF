@@ -25,14 +25,17 @@ from botcity.core import DesktopBot
 
 # Import for integration with BotCity Maestro SDK
 from botcity.maestro import *
+import datetime
 
-from configuracao import var_strCaminhoSistem, var_strUsuario, var_strSenha
+from configuracao import var_strCaminhoSistem, var_strUsuario, var_strSenha, var_strUserGmail, var_strSenhaGmail, var_strDestinatario
 
 from BASIC_SYSTEM.loginSistema import func_login
 from BASIC_SYSTEM.cadastrarRecibo import fun_acessarTelaCadastro, fun_cadastrarRecibo
 from BASIC_SYSTEM.listaComboBox import var_listCargo, var_listForma
 from PDF.extrairDados import var_strIdCliente, var_strNomeCliente, var_strTelefone, var_strNumeroFatura, var_strDataDocumento, var_strProfissional
 from PDF.extrairDados import var_strDataPagamento, var_strDescricao, var_strImposto, var_strCargo, var_strTipoPagamento, var_strSubtotal
+from BANCO.comandosMySQL import funAddBanco, funSelecionarDados
+from EMAIL.sendEmail import funConectatEmail
 
 
 # Disable errors if we are not connected to Maestro
@@ -40,6 +43,12 @@ BotMaestroSDK.RAISE_NOT_CONNECTED = False
 
 
 def main():
+    agora = datetime.datetime.now()
+    agora_string = agora.strftime("%A %d %B %y %I:%M")
+    var_strHoraInicio = datetime.datetime.strptime(
+        agora_string, "%A %d %B %y %I:%M")
+    print(f"Data hora início: {var_strHoraInicio}")
+
     # Runner passes the server url, the id of the task being executed,
     # the access token and the parameters that this task receives (when applicable).
     maestro = BotMaestroSDK.from_sys_args()
@@ -55,11 +64,45 @@ def main():
     func_login(var_strUsuario, var_strSenha, bot,
                var_strCaminhoSistem, not_found)
 
+    # Tela de cadastro e tela de recibo
     fun_acessarTelaCadastro(bot, not_found)
+
     fun_cadastrarRecibo(bot, not_found, var_listCargo, var_listForma, var_strIdCliente, var_strNomeCliente, var_strTelefone, var_strNumeroFatura, var_strDataDocumento,
                         var_strDataPagamento, var_strDescricao, var_strImposto, var_strCargo,
                         var_strProfissional, var_strTipoPagamento, var_strSubtotal)
 
+    # Adicionar dados no banco
+
+    var_strMsgErro = ""
+    var_strRetornoBD = funSelecionarDados(
+        var_strIdCliente, var_strDataDocumento, var_strDataPagamento, var_strSubtotal)
+    if var_strRetornoBD == 0:
+        print("Adicionando logs no banco...")
+        var_strProf = var_strCargo + ": " + var_strProfissional
+        valor = 0.0
+        valor = float(var_strSubtotal.replace(",", "."))
+        funAddBanco(var_strIdCliente, var_strProf, var_strDescricao,
+                    var_strDataDocumento, valor, var_strTipoPagamento, var_strDataPagamento)
+        var_strMsgErro = "sucesso"
+    else:
+        print("Erro ao adicionar logs no banco.")
+        var_strMsgErro = "erro"
+
+    # Disparar email de finalização
+    agora = datetime.datetime.now()
+    agora_string = agora.strftime("%A %d %B %y %I:%M")
+    var_strHoraFim = datetime.datetime.strptime(
+        agora_string, "%A %d %B %y %I:%M")
+    print(f"Data hora fim: {var_strHoraFim}")
+
+    funConectatEmail(var_strUserGmail, var_strSenhaGmail,
+                     var_strMsgErro, var_strHoraInicio, var_strHoraFim)
+
+    # Find Process
+    if not bot.find("sair", matching=0.97, waiting_time=10000):
+        not_found("sair")
+    bot.right_click()
+    bot.right_click()
 
 # Uncomment to mark this task as finished on BotMaestro
 # maestro.finish_task(

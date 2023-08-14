@@ -2,24 +2,26 @@
 from BANCO.conexaoMySQL import var_strCursor, var_strConexao
 
 
-def funSelecionarDados(var_strIdCliente, var_strDataDocumento, var_strDataProcessamento, var_strSubtotal):
-    result = 0
+def funSelecionarDados(var_strIdCliente, var_strDataDocumento, var_strDataPagamento, var_strSubtotal):
     try:
-        var_strComando = f'SELECT id_cliente, data_documento_leiturapdf, date_leiturapdf, subtotal_leiturapdf FROM tb_leiturapdf WHERE wiid_workItem LIKE "{var_strIdCliente}, {var_strDataDocumento},{var_strDataProcessamento},{var_strSubtotal}"'
+        result = 0
+
+        var_strComando = f'SELECT  id_cliente, data_documento_leiturapdf, data_pagamentopdf, subtotal_leiturapdf FROM tb_leiturapdf WHERE id_cliente LIKE "{var_strIdCliente} AND data_documento_leiturapdf LIKE {var_strDataDocumento} AND data_pagamentopdf LIKE {var_strDataPagamento} AND subtotal_leiturapdf LIKE {var_strSubtotal}"'
         var_strCursor.execute(var_strComando)
         retorno = var_strCursor.fetchall()
         result = len(retorno)
         return result
-        # print(result)
     except:
         print('Erro ao selecionar dados')
 
 
-def funAddBanco(var_strIdCliente,var_strDesenvolvedor,var_strDescricao,var_strDataDocumento, var_strSubtotal, var_strFormaPagamento, var_strDataProcessamento):
+def funAddBanco(var_strIdCliente, var_strDesenvolvedor, var_strDescricao, var_strDataDocumento, var_strSubtotal, var_strFormaPagamento, var_strDataPagamento):
     try:
-        var_strComando = f'INSERT INTO tb_leiturapdf (id_cliente, desenvolvedor_leiturapdf, descricao_servicos_leiturapdf,data_documento_leiturapdf,subtotal_leiturapdf,forma_pagamento_leiturapdf,date_leiturapdf) VALUES ("{var_strIdCliente}", "{var_strDesenvolvedor}","{var_strDescricao}","{var_strDataDocumento}","{var_strSubtotal},"{var_strFormaPagamento},"{var_strDataProcessamento}")'
+        var_strComando = f'INSERT INTO tb_leiturapdf (id_cliente, desenvolvedor_leiturapdf, descricao_servicos_leiturapdf,data_documento_leiturapdf,subtotal_leiturapdf,forma_pagamento_leiturapdf,data_pagamentopdf) VALUES ("{var_strIdCliente}", "{var_strDesenvolvedor}","{var_strDescricao}","{var_strDataDocumento}",{var_strSubtotal},"{var_strFormaPagamento}","{var_strDataPagamento}")'
         var_strCursor.execute(var_strComando)
         var_strConexao.commit()
-        print(f'Adicionando fatura do cliente {var_strIdCliente} com valor R$ {var_strSubtotal} no banco')
+        print(
+            f'Adicionando fatura do cliente {var_strIdCliente} com valor R$ {var_strSubtotal} no banco')
     except:
-        print(f'Erro ao adicionar dados no banco. Cliente: {var_strIdCliente} com valor R$ {var_strSubtotal}')
+        print(
+            f'Erro ao adicionar dados no banco. Cliente: {var_strIdCliente} com valor R$ {var_strSubtotal}')
