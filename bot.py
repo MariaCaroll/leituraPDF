@@ -26,6 +26,7 @@ from botcity.core import DesktopBot
 # Import for integration with BotCity Maestro SDK
 from botcity.maestro import *
 import datetime
+import pandas as pd
 
 from configuracao import var_strCaminhoSistem, var_strUsuario, var_strSenha, var_strUserGmail, var_strSenhaGmail, var_strDestinatario
 
@@ -64,30 +65,38 @@ def main():
     func_login(var_strUsuario, var_strSenha, bot,
                var_strCaminhoSistem, not_found)
 
-    # Tela de cadastro e tela de recibo
+    #Tela de cadastro e tela de recibo
     fun_acessarTelaCadastro(bot, not_found)
 
     fun_cadastrarRecibo(bot, not_found, var_listCargo, var_listForma, var_strIdCliente, var_strNomeCliente, var_strTelefone, var_strNumeroFatura, var_strDataDocumento,
                         var_strDataPagamento, var_strDescricao, var_strImposto, var_strCargo,
-                        var_strProfissional, var_strTipoPagamento, var_strSubtotal)
+                      var_strProfissional, var_strTipoPagamento, var_strSubtotal)
 
     # Adicionar dados no banco
 
     var_strMsgErro = ""
+    valor = 0.00
+    valor = float(var_strSubtotal.replace(",", "."))
     var_strRetornoBD = funSelecionarDados(
-        var_strIdCliente, var_strDataDocumento, var_strDataPagamento, var_strSubtotal)
+        var_strIdCliente, var_strDataDocumento, var_strDataPagamento, valor)
     if var_strRetornoBD == 0:
         print("Adicionando logs no banco...")
         var_strProf = var_strCargo + ": " + var_strProfissional
-        valor = 0.0
-        valor = float(var_strSubtotal.replace(",", "."))
+
         funAddBanco(var_strIdCliente, var_strProf, var_strDescricao,
                     var_strDataDocumento, valor, var_strTipoPagamento, var_strDataPagamento)
         var_strMsgErro = "sucesso"
     else:
         print("Erro ao adicionar logs no banco.")
         var_strMsgErro = "erro"
-
+    
+    #Adicionar logs no arquivo excel
+    var_strCaminhoArquivo= "dadosRecibo.xlsx"
+    var_dtRecibo = pd.DataFrame(columns=["Cliente", "Profissional","Descrição do Serviço", "Forma de Pagamento", "Data do Pagamento", "SubTotal"])
+    var_strNewRow = {"Cliente": var_strNomeCliente, "Profissional":var_strProf,"Descrição do Serviço":var_strDescricao, "Forma de Pagamento":var_strTipoPagamento, "Data do Pagamento":var_strDataPagamento, "SubTotal":var_strSubtotal}
+    var_dtRecibo.loc[len(var_dtRecibo)] = var_strNewRow
+    var_dtRecibo.to_excel(var_strCaminhoArquivo, index=False)
+ 
     # Disparar email de finalização
     agora = datetime.datetime.now()
     agora_string = agora.strftime("%A %d %B %y %I:%M")
@@ -96,7 +105,7 @@ def main():
     print(f"Data hora fim: {var_strHoraFim}")
 
     funConectatEmail(var_strUserGmail, var_strSenhaGmail,
-                     var_strMsgErro, var_strHoraInicio, var_strHoraFim)
+                     var_strMsgErro, var_strHoraInicio, var_strHoraFim,var_strCaminhoArquivo)
 
     # Find Process
     if not bot.find("sair", matching=0.97, waiting_time=10000):

@@ -5,8 +5,8 @@ from BANCO.conexaoMySQL import var_strCursor, var_strConexao
 def funSelecionarDados(var_strIdCliente, var_strDataDocumento, var_strDataPagamento, var_strSubtotal):
     try:
         result = 0
-
-        var_strComando = f'SELECT  id_cliente, data_documento_leiturapdf, data_pagamentopdf, subtotal_leiturapdf FROM tb_leiturapdf WHERE id_cliente LIKE "{var_strIdCliente} AND data_documento_leiturapdf LIKE {var_strDataDocumento} AND data_pagamentopdf LIKE {var_strDataPagamento} AND subtotal_leiturapdf LIKE {var_strSubtotal}"'
+        var_strComando = f'SELECT  id_cliente, data_documento_leiturapdf, data_pagamentopdf, subtotal_leiturapdf FROM tb_leiturapdf WHERE id_cliente LIKE "{var_strIdCliente}" AND data_documento_leiturapdf LIKE "{var_strDataDocumento}" AND data_pagamentopdf LIKE "{var_strDataPagamento}" AND subtotal_leiturapdf LIKE "{var_strSubtotal}"'
+        print(var_strComando)
         var_strCursor.execute(var_strComando)
         retorno = var_strCursor.fetchall()
         result = len(retorno)
